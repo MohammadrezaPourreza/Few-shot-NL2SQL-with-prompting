@@ -441,7 +441,7 @@ if sys.argv[1] == "--dataset" and sys.argv[3] == "--output":
 else:
     raise Exception("Please use this format python CoT.py --dataset data/ --output predicted_sql.txt")
 
-API_KEY = "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"
+API_KEY = #API KEY
 os.environ["OPENAI_API_KEY"] = API_KEY
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -603,11 +603,9 @@ def dubug(prompt):
 if __name__ == '__main__':
     spider_schema,spider_primary,spider_foreign = creatiing_schema(DATASET_SCHEMA)
     val_df = load_data(DATASET)
-    error_df = pd.read_csv("error_analysis.csv",index_col=False)
-    error_df = error_df.head(500)
     print(f"Number of validation samples {val_df.shape[0]}")
     CODEX = []
-    for index, row in error_df.iterrows():
+    for index, row in val_df.iterrows():
         #if index < 35: continue #for testing
         print(f"index is {index}")
         print(row['query'])
