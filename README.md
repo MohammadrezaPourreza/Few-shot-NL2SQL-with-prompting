@@ -18,8 +18,8 @@ To run this project, use the following commands:
 
 ```
 $ pip3 install -r requirements.txt
-$ echo "Start running test.py"
+$ echo "Start running DIN-SQL.py"
 $ python3 DIN-SQL.py --dataset ./data/ --output predicted_sql.txt
-$ echo "Finished running test.py"
+$ echo "Finished running DIN-SQL.py"
 ```
 
