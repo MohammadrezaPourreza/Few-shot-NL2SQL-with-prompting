@@ -19,7 +19,7 @@ To run this project, use the following commands:
 ```
 $ pip3 install -r requirements.txt
 $ echo "Start running test.py"
-$ python3 CoT.py --dataset ./data/ --output predicted_sql.txt
+$ python3 DIN-SQL.py --dataset ./data/ --output predicted_sql.txt
 $ echo "Finished running test.py"
 ```
 
