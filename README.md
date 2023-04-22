@@ -3,6 +3,7 @@
 ## Table of contents
 * [Dataset](#dataset)
 * [Setup](#setup)
+* [Citation](#citation)
 
 
 ## dataset
@@ -23,3 +24,8 @@ $ python3 DIN-SQL.py --dataset ./data/ --output predicted_sql.txt
 $ echo "Finished running DIN-SQL.py"
 ```
 
+## citation
+
+```
+$ Being published soon
+```
