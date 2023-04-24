@@ -27,5 +27,10 @@ $ echo "Finished running DIN-SQL.py"
 ## citation
 
 ```
-$ Being published soon
+$ @misc{2304.11015,
+$ Author = {Mohammadreza Pourreza and Davood Rafiei},
+$ Title = {DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction},
+$ Year = {2023},
+$ Eprint = {arXiv:2304.11015},
+}
 ```
