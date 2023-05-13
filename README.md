@@ -23,14 +23,4 @@ $ echo "Start running DIN-SQL.py"
 $ python3 DIN-SQL.py --dataset ./data/ --output predicted_sql.txt
 $ echo "Finished running DIN-SQL.py"
 ```
-## citation 
-
-``` 
-@article{pourreza2023din,
-  title={DIN-SQL: Decomposed In-Context Learning of Text-to-SQL with Self-Correction},
-  author={Pourreza, Mohammadreza and Rafiei, Davood},
-  journal={arXiv preprint arXiv:2304.11015},
-  year={2023}
-}
-```
 
