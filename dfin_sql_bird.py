@@ -3,8 +3,11 @@ import re
 import pandas as pd
 import json
 import glob
-
+import openai
 from typing import List, Tuple
+
+from langchain.llms import AzureOpenAI
+from langchain.schema import HumanMessage
 from langchain.sql_database import SQLDatabase
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
@@ -14,11 +17,20 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 
+from azure_openai import get_langchain_llm_4, get_completion_4
 
-# CHANGE THIS TO YOUR OPENAI API KEY
+CHAT = get_langchain_llm_4()
 
-os.environ["OPENAI_API_KEY"] = ""
-CHAT = ChatOpenAI(model="gpt-4-32k",temperature=0,max_tokens=2000)
+
+# result = llm("hello")
+
+
+
+
+
+# PERSONAL
+# os.environ["OPENAI_API_KEY"] = "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"
+# CHAT = ChatOpenAI(model="gpt-4-32k",temperature=0,max_tokens=2000)
 dev_db_path = "dev/dev_databases"
 dev_df = pd.read_json("dev/dev.json")
 
@@ -117,98 +129,6 @@ Hint also refers to the columns = [movies.movie_release_year, movies.movie_id, r
 Based on the columns and tables, we need these Foreign_keys = [movies.movie_id = ratings.movie_id].
 Based on the tables, columns, and Foreign_keys, The set of possible cell values are = [1]. So the Schema_links are:
 Schema_links: [movies.movie_release_year, movies.movie_title, ratings.rating_score, movies.movie_id=ratings.movie_id, 1]
-
-Schema of the database with sample rows:
-#
-CREATE TABLE lists (
-        user_id INTEGER, 
-        list_id INTEGER NOT NULL, 
-        list_title TEXT, 
-        list_movie_number INTEGER, 
-        list_update_timestamp_utc TEXT, 
-        list_creation_timestamp_utc TEXT, 
-        list_followers INTEGER, 
-        list_url TEXT, 
-        list_comments INTEGER, 
-        list_description TEXT, 
-        list_cover_image_url TEXT, 
-        list_first_image_url TEXT, 
-        list_second_image_url TEXT, 
-        list_third_image_url TEXT, 
-        PRIMARY KEY (list_id), 
-        FOREIGN KEY(user_id) REFERENCES lists_users (user_id)
-)
-
-/*
-3 rows from lists table:
-user_id list_id list_title      list_movie_number       list_update_timestamp_utc       list_creation_timestamp_utc     list_followers  list_url        list_commentslist_description list_cover_image_url    list_first_image_url    list_second_image_url   list_third_image_url
-88260493        1       Films that made your kid sister cry     5       2019-01-24 19:16:18     2009-11-11 00:02:21     5       http://mubi.com/lists/films-that-made-your-kid-sister-cry     3       <p>Don’t be such a baby!!</p>
-<p><strong>bold</strong></p>    https://assets.mubicdn.net/images/film/3822/image-w1280.jpg?1445914994  https://assets.mubicdn.net/images/film/3822/image-w320.jpg?1445914994 https://assets.mubicdn.net/images/film/506/image-w320.jpg?1543838422    https://assets.mubicdn.net/images/film/485/image-w320.jpg?1575331204
-45204418        2       Headscratchers  3       2018-12-03 15:12:20     2009-11-11 00:05:11     1       http://mubi.com/lists/headscratchers    2       <p>Films that need at least two viewings to really make sense.</p>
-<p>Or at least… they did for <em>       https://assets.mubicdn.net/images/film/4343/image-w1280.jpg?1583331932  https://assets.mubicdn.net/images/film/4343/image-w320.jpg?1583331932 https://assets.mubicdn.net/images/film/159/image-w320.jpg?1548864573    https://assets.mubicdn.net/images/film/142/image-w320.jpg?1544094102
-48905025        3       Sexy Time Movies        7       2019-05-30 03:00:07     2009-11-11 00:20:00     6       http://mubi.com/lists/sexy-time-movies  5       <p>Films that get you in the mood…for love. In development.</p>
-<p>Remarks</p>
-<p><strong>Enter the    https://assets.mubicdn.net/images/film/3491/image-w1280.jpg?1564112978  https://assets.mubicdn.net/images/film/3491/image-w320.jpg?1564112978https://assets.mubicdn.net/images/film/2377/image-w320.jpg?1564675204    https://assets.mubicdn.net/images/film/2874/image-w320.jpg?1546574412
-*/
-
-CREATE TABLE lists_users (
-        user_id INTEGER NOT NULL, 
-        list_id INTEGER NOT NULL, 
-        list_update_date_utc TEXT, 
-        list_creation_date_utc TEXT, 
-        user_trialist INTEGER, 
-        user_subscriber INTEGER, 
-        user_avatar_image_url TEXT, 
-        user_cover_image_url TEXT, 
-        user_eligible_for_trial TEXT, 
-        user_has_payment_method TEXT, 
-        PRIMARY KEY (user_id, list_id), 
-        FOREIGN KEY(list_id) REFERENCES lists (list_id), 
-        FOREIGN KEY(user_id) REFERENCES lists (user_id)
-)
-
-/*
-3 rows from lists_users table:
-user_id list_id list_update_date_utc    list_creation_date_utc  user_trialist   user_subscriber user_avatar_image_url   user_cover_image_url    user_eligible_for_trial       user_has_payment_method
-85981819        1969    2019-11-26      2009-12-18      1       1       https://assets.mubicdn.net/images/avatars/74983/images-w150.jpg?1523895214      None    0    1
-85981819        3946    2020-05-01      2010-01-30      1       1       https://assets.mubicdn.net/images/avatars/74983/images-w150.jpg?1523895214      None    0    1
-85981819        6683    2020-04-12      2010-03-31      1       1       https://assets.mubicdn.net/images/avatars/74983/images-w150.jpg?1523895214      None    0    1
-*/
-
-Table: lists
-Column user_id: column description -> ID related to the user who created the list.
-Column list_id: column description -> ID of the list on Mubi
-Column list_title: column description -> Name of the list
-Column list_movie_number: column description -> Number of movies added to the list
-Column list_update_timestamp_utc: column description -> Last update timestamp for the list
-Column list_creation_timestamp_utc: column description -> Creation timestamp for the list
-Column list_followers: column description -> Number of followers on the list
-Column list_url: column description -> URL to the list page on Mubi
-Column list_comments: column description -> Number of comments on the list
-Column list_description: column description -> List description made by the user
-
-Table: lists_users
-Column user_id: column description -> ID related to the user who created the list.
-Column list_id: column description -> ID of the list on Mubi
-Column list_update_date_utc: column description -> Last update date for the list, value description -> YYYY-MM-DD
-Column list_creation_date_utc: column description -> Creation date for the list, value description -> YYYY-MM-DD
-Column user_trialist: column description -> whether the user was a tralist when he created the list , value description -> 1 = the user was a trialist when he created the list 0 = the user was not a trialist when he created the list
-Column user_subscriber: column description -> whether the user was a subscriber when he created the list , value description -> 1 = the user was a subscriber when he created the list 0 = the user was not a subscriber when he created the list
-Column user_avatar_image_url: column description -> User profile image URL on Mubi
-Column user_cover_image_url: column description -> User profile cover image URL on Mubi
-Column user_eligible_for_trial: column description -> whether the user was eligible for trial when he created the list , value description -> 1 = the user was eligible for trial when he created the list 0 = the user was not eligible for trial when he created the list
-Column user_has_payment_method : column description -> whether the user was a paying subscriber when he created the list , value description -> 1 = the user was a paying subscriber when he created the list 0 = the user was not a paying subscriber when he created the list
-#
-Q: Among the lists created by user 4208563, which one has the highest number of followers? Indicate how many followers it has and whether the user was a subscriber or not when he created the list.
-Hint: User 4208563 refers to user_id;highest number of followers refers to MAX(list_followers); user_subscriber = 1 means that the user was a subscriber when he created the list; user_subscriber = 0 means the user was not a subscriber when he created the list (to replace)
-A: Let’s think step by step. In the question , we are asked:
-"user" so we need column = [lists_users.user_id]
-"number of followers" so we need column = [lists.list_followers]
-"user was a subscriber or not" so we need column = [lists_users.user_subscriber]
-Hint also refers to the columns = [lists_users.user_id,lists.list_followers,lists_users.user_subscriber]
-Based on the columns and tables, we need these Foreign_keys = [lists.user_id = lists_user.user_id,lists.list_id = lists_user.list_id].
-Based on the tables, columns, and Foreign_keys, The set of possible cell values are = [1, 4208563]. So the Schema_links are:
-Schema_links: [lists.list_followers,lists_users.user_subscriber,lists.user_id = lists_user.user_id,lists.list_id = lists_user.list_id, lists_users.user_id, 4208563, 1]
 
 """  # noqa: E501
 
@@ -1114,6 +1034,7 @@ def get_database_schema(DB_URI: str) -> str:
     db._sample_rows_in_table_info = 3
     return db.get_table_info_no_throw()
 
+
 def extract_schema_links(input_text: str) -> List[str]:
     pattern = r'Schema_links:\s*\[(.*?)\]'
     match = re.search(pattern, input_text)
@@ -1187,6 +1108,7 @@ def table_descriptions_parser(database_dir):
 
 start_index = 0
 
+
 if __name__ == "__main__":
     logs_df = pd.DataFrame(
         columns=["question","gold_query","db_id","final_query","schema_linking","classification","sql_generation","self_correction"])
@@ -1230,7 +1152,7 @@ if __name__ == "__main__":
         print("Question: ", question)
         hint = str(row["evidence"])
         question_id = row["question_id"]
-        chain = LLMChain(llm=CHAT, prompt=schema_linking_prompt)
+        chain = LLMChain(llm=CHAT, prompt=schema_linking_prompt, verbose=True)
         schema_linking = chain.run(question=question, schema=schema, hint=hint, columns_descriptions=columns_descriptions) # noqa: E501
         schema_links = extract_schema_links(schema_linking)
         chain = LLMChain(llm=CHAT, prompt=classification_prompt)
